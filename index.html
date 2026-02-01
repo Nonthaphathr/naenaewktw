@@ -6,6 +6,8 @@
     <title>ระบบบันทึกข้อมูลนักเรียนที่สนใจสมัครเรียน</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         * {
             margin: 0;
@@ -1158,15 +1160,18 @@
             </div>
 
             <div class="form-group">
-                <label>จำนวนนักเรียนที่สนใจสมัคร</label>
+                <label style="font-size: 18px; font-weight: 700; color: #ff6b35; display: flex; align-items: center; gap: 8px;">
+                    📝 จำนวนนักเรียนที่สนใจสมัคร
+                    <span style="font-size: 13px; font-weight: 400; color: #fff; background: #ff6b35; padding: 3px 10px; border-radius: 20px; white-space: nowrap;">แยกตามเพศ</span>
+                </label>
                 <div class="number-inputs">
                     <div>
-                        <label style="font-size: 14px; color: #666;">ชาย</label>
-                        <input type="number" id="maleCount" min="0" value="0" onchange="updateTotal()">
+                        <label style="font-size: 14px; color: #666;">👦 ชาย</label>
+                        <input type="number" id="maleCount" min="0" value="0" oninput="generateStudentForms()">
                     </div>
                     <div>
-                        <label style="font-size: 14px; color: #666;">หญิง</label>
-                        <input type="number" id="femaleCount" min="0" value="0" onchange="updateTotal()">
+                        <label style="font-size: 14px; color: #666;">👧 หญิง</label>
+                        <input type="number" id="femaleCount" min="0" value="0" oninput="generateStudentForms()">
                     </div>
                     <div>
                         <label style="font-size: 14px; color: #666;">รวมทั้งหมด</label>
@@ -1230,8 +1235,7 @@
                             <th>หญิง</th>
                             <th>รวม</th>
                             <th>เขียนใบสมัคร</th>
-                            <th>รับใบสมัครไว้เขียนส่งทีหลัง</th>
-                            <th>วันที่บันทึก</th>
+                            <th>รับใบสมัครไว้<br>(จะส่งภายหลัง)</th>
                             <th>คัดลอก</th>
                             <th>จัดการ</th>
                         </tr>
@@ -1401,25 +1405,116 @@
         }
 
         function showSettingsTab() {
-            const password = prompt('กรุณาใส่รหัสผ่านเพื่อเข้าถึงการตั้งค่า:');
-            
-            if (password === null) {
-                // User clicked cancel
-                return;
-            }
-            
-            if (password === '1234') {
-                // Correct password
-                showTab('settings');
-            } else {
-                alert('รหัสผ่านไม่ถูกต้อง');
-            }
+            Swal.fire({
+                title: '🔒 เข้าถึงการตั้งค่า',
+                text: 'กรุณาใส่รหัสผ่าน',
+                input: 'password',
+                inputAttributes: { autocomplete: 'current-password', placeholder: 'รหัสผ่าน' },
+                showCancelButton: true,
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonText: 'เข้า',
+                confirmButtonColor: '#ff6b35',
+                cancelButtonColor: '#aaa',
+                customClass: { input: 'swal-input-custom' }
+            }).then((result) => {
+                if (result.isDismissed) return;
+                if (result.value === '1234') {
+                    showTab('settings');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'รหัสผ่านไม่ถูกต้อง',
+                        text: 'กรุณาลองใหม่อีกครั้ง',
+                        confirmButtonColor: '#ff6b35',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                }
+            });
         }
 
         function updateTotal() {
             const male = parseInt(document.getElementById('maleCount').value) || 0;
             const female = parseInt(document.getElementById('femaleCount').value) || 0;
             document.getElementById('totalCount').value = male + female;
+        }
+
+        function generateStudentForms() {
+            updateTotal();
+
+            const male = parseInt(document.getElementById('maleCount').value) || 0;
+            const female = parseInt(document.getElementById('femaleCount').value) || 0;
+            const total = male + female;
+
+            // ถ้า total = 0 ให้ล้างลิสต์
+            if (total === 0) {
+                document.getElementById('studentList').innerHTML = '';
+                studentCounter = 0;
+                return;
+            }
+
+            // เก็บข้อมูลที่กรอกไปแล้วไว้ก่อน
+            const existingData = [];
+            document.querySelectorAll('.student-item').forEach(item => {
+                existingData.push({
+                    prefix: item.querySelector('select').value,
+                    firstName: item.querySelectorAll('input[type="text"]')[0].value,
+                    lastName: item.querySelectorAll('input[type="text"]')[1].value,
+                    hasWritten: item.querySelector('.checkbox-written').checked,
+                    hasReceived: item.querySelector('.checkbox-received').checked
+                });
+            });
+
+            // สร้าง target list: ชายก่อน แล้วหญิง พร้อม default prefix
+            const targetPrefixes = [];
+            for (let i = 0; i < male; i++) targetPrefixes.push('เด็กชาย');
+            for (let i = 0; i < female; i++) targetPrefixes.push('เด็กหญิง');
+
+            // ล้าง + rebuild พร้อมเก็บ existing data ไว้
+            document.getElementById('studentList').innerHTML = '';
+            studentCounter = 0;
+
+            targetPrefixes.forEach((defaultPrefix, index) => {
+                studentCounter++;
+                const existing = existingData[index]; // เก็บข้อมูลเดิม ถ้ามี
+                const studentList = document.getElementById('studentList');
+                const div = document.createElement('div');
+                div.className = 'student-item';
+                div.id = `student-${studentCounter}`;
+
+                const prefix = existing && existing.firstName ? existing.prefix : defaultPrefix;
+                const firstName = existing ? existing.firstName : '';
+                const lastName = existing ? existing.lastName : '';
+                const hasWritten = existing ? existing.hasWritten : false;
+                const hasReceived = existing ? existing.hasReceived : false;
+
+                div.innerHTML = `
+                    <div class="student-name-row">
+                        <select>
+                            <option value="เด็กชาย" ${prefix === 'เด็กชาย' ? 'selected' : ''}>เด็กชาย</option>
+                            <option value="เด็กหญิง" ${prefix === 'เด็กหญิง' ? 'selected' : ''}>เด็กหญิง</option>
+                            <option value="นาย" ${prefix === 'นาย' ? 'selected' : ''}>นาย</option>
+                            <option value="นางสาว" ${prefix === 'นางสาว' ? 'selected' : ''}>นางสาว</option>
+                        </select>
+                        <input type="text" placeholder="ชื่อ" value="${firstName}" required>
+                        <input type="text" placeholder="นามสกุล" value="${lastName}" required>
+                    </div>
+                    <div class="student-bottom-row">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" class="checkbox-written" ${hasWritten ? 'checked' : ''}>
+                                เขียนใบสมัครแล้ว
+                            </label>
+                            <label>
+                                <input type="checkbox" class="checkbox-received" ${hasReceived ? 'checked' : ''}>
+                                รับใบสมัครไว้และจะส่งภายหลัง
+                            </label>
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
+                    </div>
+                `;
+                studentList.appendChild(div);
+            });
         }
 
         function addStudent() {
@@ -1447,7 +1542,7 @@
                         </label>
                         <label>
                             <input type="checkbox" class="checkbox-received">
-                            รับใบสมัครไว้เขียนส่งทีหลัง
+                            รับใบสมัครไว้และจะส่งภายหลัง
                         </label>
                     </div>
                     <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
@@ -1461,14 +1556,25 @@
         }
 
         async function deleteRecord(id) {
-            if (confirm('ต้องการลบข้อมูลนี้? การลบไม่สามารถกู้คืนได้')) {
+            const { isConfirmed } = await Swal.fire({
+                icon: 'warning',
+                title: 'ยืนยันการลบ',
+                text: 'ต้องการลบข้อมูลนี้? การลบไม่สามารถกู้คืนได้',
+                showCancelButton: true,
+                confirmButtonText: '🗑️ ลบเลย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#aaa'
+            });
+
+            if (isConfirmed) {
                 try {
                     await window.deleteDoc(window.doc(window.db, 'registrations', id));
-                    showToast('ลบข้อมูลเรียบร้อยแล้ว');
+                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', text: 'ลบข้อมูลเรียบร้อยแล้ว', confirmButtonColor: '#ff6b35', timer: 1500, timerProgressBar: true, showConfirmButton: false });
                     loadData();
                 } catch (error) {
                     console.error('Error deleting record:', error);
-                    alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+                    Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการลบข้อมูล', confirmButtonColor: '#ff6b35' });
                 }
             }
         }
@@ -1478,7 +1584,7 @@
                 // Find the record in window.allRegistrationData
                 const record = window.allRegistrationData.find(item => item.id === id);
                 if (!record) {
-                    alert('ไม่พบข้อมูลที่ต้องการแก้ไข');
+                    Swal.fire({ icon: 'error', title: 'ไม่พบข้อมูล', text: 'ไม่พบข้อมูลที่ต้องการแก้ไข', confirmButtonColor: '#ff6b35' });
                     return;
                 }
 
@@ -1523,7 +1629,7 @@
                                     </label>
                                     <label>
                                         <input type="checkbox" class="checkbox-received" ${student.hasReceived ? 'checked' : ''}>
-                                        รับใบสมัครไว้เขียนส่งทีหลัง
+                                        รับใบสมัครไว้และจะส่งภายหลัง
                                     </label>
                                 </div>
                                 <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
@@ -1543,7 +1649,7 @@
                 showToast('กำลังแก้ไขข้อมูล - กดบันทึกเพื่ออัปเดต');
             } catch (error) {
                 console.error('Error editing record:', error);
-                alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการโหลดข้อมูล', confirmButtonColor: '#ff6b35' });
             }
         }
 
@@ -1555,7 +1661,14 @@
             const totalStudentsInSchool = parseInt(document.getElementById('totalStudentsInSchool').value) || 0;
 
             if (!school || !teacher) {
-                alert('กรุณาเลือกโรงเรียนและครูผู้ส่งข้อมูล');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ข้อมูลไม่สมบูรณ์',
+                    text: 'กรุณาเลือกโรงเรียนและครูผู้ส่งข้อมูล',
+                    confirmButtonColor: '#ff6b35',
+                    timer: 2500,
+                    timerProgressBar: true
+                });
                 return;
             }
 
@@ -1638,7 +1751,7 @@
                 }
             } catch (error) {
                 console.error('Error saving data:', error);
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', confirmButtonColor: '#ff6b35' });
             }
         }
 
@@ -1719,7 +1832,7 @@
                     <div class="label">คน</div>
                 </div>
                 <div class="stat-card">
-                    <h3>รับใบสมัครไว้เขียนส่งทีหลัง</h3>
+                    <h3>รับใบสมัครไว้<br><span style="font-size:13px;font-weight:400;color:#888;">(จะส่งภายหลัง)</span></h3>
                     <div class="value">${totalReceived}</div>
                     <div class="label">คน</div>
                 </div>
@@ -1949,7 +2062,7 @@
                             <span class="stat-value">${written}</span>
                         </div>
                         <div class="card-stat-item">
-                            <span class="stat-label">รับใบสมัครไว้เขียนส่งทีหลัง</span>
+                            <span class="stat-label">รับใบสมัครไว้<br>(จะส่งต่อ)</span>
                             <span class="stat-value">${received}</span>
                         </div>
                     </div>
@@ -1968,7 +2081,7 @@
                 // Find the record
                 const record = window.allRegistrationData.find(item => item.id === id);
                 if (!record) {
-                    alert('ไม่พบข้อมูล');
+                    Swal.fire({ icon: 'error', title: 'ไม่พบข้อมูล', text: 'ไม่พบข้อมูลของโรงเรียนนี้', confirmButtonColor: '#ff6b35' });
                     return;
                 }
 
@@ -1988,7 +2101,7 @@
   - ชาย: ${record.male || 0} คน
   - หญิง: ${record.female || 0} คน
 • เขียนใบสมัครแล้ว: ${written} คน
-• รับใบสมัครไว้เขียนส่งทีหลัง: ${received} คน`;
+• รับใบสมัครไว้และจะส่งภายหลัง: ${received} คน`;
 
                 if (record.students && record.students.length > 0) {
                     reportText += `
@@ -1997,7 +2110,7 @@
                     record.students.forEach((student, index) => {
                         const status = [];
                         if (student.hasWritten) status.push('เขียนใบสมัครแล้ว');
-                        if (student.hasReceived) status.push('รับใบสมัครไว้เขียนส่งทีหลัง');
+                        if (student.hasReceived) status.push('รับใบสมัครไว้และจะส่งภายหลัง');
                         const statusText = status.length > 0 ? ` (${status.join(', ')})` : '';
                         reportText += `
 ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusText}`;
@@ -2016,7 +2129,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
                 document.getElementById('reportModal').style.display = 'block';
             } catch (error) {
                 console.error('Error copying school report:', error);
-                alert('เกิดข้อผิดพลาดในการสร้างรายงาน');
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการสร้างรายงาน', confirmButtonColor: '#ff6b35' });
             }
         }
 
@@ -2090,7 +2203,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
                     <div class="label">คน</div>
                 </div>
                 <div class="stat-card">
-                    <h3>รับใบสมัครไว้เขียนส่งทีหลัง</h3>
+                    <h3>รับใบสมัครไว้<br><span style="font-size:13px;font-weight:400;color:#888;">(จะส่งภายหลัง)</span></h3>
                     <div class="value">${totalReceived}</div>
                     <div class="label">คน</div>
                 </div>
@@ -2180,7 +2293,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
 • ชาย: ${totalMale} คน
 • หญิง: ${totalFemale} คน
 • เขียนใบสมัครแล้ว: ${totalWritten} คน
-• รับใบสมัครไว้เขียนส่งทีหลัง: ${totalReceived} คน
+• รับใบสมัครไว้และจะส่งภายหลัง: ${totalReceived} คน
 
 📍 รายละเอียดแยกตามโรงเรียน
 `;
@@ -2190,7 +2303,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
                 reportText += `
 ${school}
 • รวม ${sd.total} คน (ชาย ${sd.male} หญิง ${sd.female})
-• เขียนใบสมัคร ${sd.written} คน, รับใบสมัครไว้เขียนส่งทีหลัง ${sd.received} คน
+• เขียนใบสมัคร ${sd.written} คน, รับใบสมัครไว้และจะส่งภายหลัง ${sd.received} คน
 `;
             });
 
@@ -2263,7 +2376,7 @@ ${school}
         async function addSchool() {
             const input = document.getElementById('newSchool').value.trim();
             if (!input) {
-                alert('กรุณากรอกชื่อโรงเรียน');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลว่าง', text: 'กรุณากรอกชื่อโรงเรียน', confirmButtonColor: '#ff6b35', timer: 2000, timerProgressBar: true });
                 return;
             }
 
@@ -2273,7 +2386,7 @@ ${school}
                 .filter(s => s.length > 0);
 
             if (schools.length === 0) {
-                alert('กรุณากรอกชื่อโรงเรียน');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลว่าง', text: 'กรุณากรอกชื่อโรงเรียน', confirmButtonColor: '#ff6b35', timer: 2000, timerProgressBar: true });
                 return;
             }
 
@@ -2286,20 +2399,31 @@ ${school}
                 document.getElementById('newSchool').value = '';
                 await loadSchools();
                 await loadData(); // Update landing page
-                showToast(`เพิ่มโรงเรียน ${addedCount} โรงเรียนเรียบร้อยแล้ว`);
+                Swal.fire({ icon: 'success', title: 'เพิ่มสำเร็จ', text: `เพิ่มโรงเรียน ${addedCount} โรงเรียน`, confirmButtonColor: '#ff6b35', timer: 1500, timerProgressBar: true, showConfirmButton: false });
             } catch (error) {
                 console.error('Error adding school:', error);
-                alert('เกิดข้อผิดพลาดในการเพิ่มโรงเรียน');
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการเพิ่มโรงเรียน', confirmButtonColor: '#ff6b35' });
             }
         }
 
         async function deleteSchool(id) {
-            if (confirm('ต้องการลบโรงเรียนนี้?')) {
+            const { isConfirmed } = await Swal.fire({
+                icon: 'warning',
+                title: 'ยืนยันการลบ',
+                text: 'ต้องการลบโรงเรียนนี้?',
+                showCancelButton: true,
+                confirmButtonText: '🗑️ ลบเลย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#aaa'
+            });
+
+            if (isConfirmed) {
                 try {
                     await window.deleteDoc(window.doc(window.db, 'schools', id));
                     await loadSchools();
-                    await loadData(); // Update landing page
-                    showToast('ลบโรงเรียนเรียบร้อยแล้ว');
+                    await loadData();
+                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', text: 'ลบโรงเรียนเรียบร้อยแล้ว', confirmButtonColor: '#ff6b35', timer: 1500, timerProgressBar: true, showConfirmButton: false });
                 } catch (error) {
                     console.error('Error deleting school:', error);
                 }
@@ -2344,7 +2468,7 @@ ${school}
         async function addTeacher() {
             const input = document.getElementById('newTeacher').value.trim();
             if (!input) {
-                alert('กรุณากรอกชื่อครู');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลว่าง', text: 'กรุณากรอกชื่อครู', confirmButtonColor: '#ff6b35', timer: 2000, timerProgressBar: true });
                 return;
             }
 
@@ -2354,7 +2478,7 @@ ${school}
                 .filter(s => s.length > 0);
 
             if (teachers.length === 0) {
-                alert('กรุณากรอกชื่อครู');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลว่าง', text: 'กรุณากรอกชื่อครู', confirmButtonColor: '#ff6b35', timer: 2000, timerProgressBar: true });
                 return;
             }
 
@@ -2366,19 +2490,30 @@ ${school}
                 }
                 document.getElementById('newTeacher').value = '';
                 loadTeachers();
-                showToast(`เพิ่มครู ${addedCount} ท่านเรียบร้อยแล้ว`);
+                Swal.fire({ icon: 'success', title: 'เพิ่มสำเร็จ', text: `เพิ่มครู ${addedCount} ท่าน`, confirmButtonColor: '#ff6b35', timer: 1500, timerProgressBar: true, showConfirmButton: false });
             } catch (error) {
                 console.error('Error adding teacher:', error);
-                alert('เกิดข้อผิดพลาดในการเพิ่มครู');
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการเพิ่มครู', confirmButtonColor: '#ff6b35' });
             }
         }
 
         async function deleteTeacher(id) {
-            if (confirm('ต้องการลบครูท่านนี้?')) {
+            const { isConfirmed } = await Swal.fire({
+                icon: 'warning',
+                title: 'ยืนยันการลบ',
+                text: 'ต้องการลบครูท่านนี้?',
+                showCancelButton: true,
+                confirmButtonText: '🗑️ ลบเลย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#aaa'
+            });
+
+            if (isConfirmed) {
                 try {
                     await window.deleteDoc(window.doc(window.db, 'teachers', id));
                     loadTeachers();
-                    showToast('ลบครูเรียบร้อยแล้ว');
+                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', text: 'ลบครูเรียบร้อยแล้ว', confirmButtonColor: '#ff6b35', timer: 1500, timerProgressBar: true, showConfirmButton: false });
                 } catch (error) {
                     console.error('Error deleting teacher:', error);
                 }
@@ -2585,7 +2720,7 @@ ${school}
                                 <th rowspan="2">ครูผู้ส่งข้อมูล</th>
                                 <th colspan="3">จำนวนนักเรียน</th>
                                 <th rowspan="2">เขียนใบสมัคร</th>
-                                <th rowspan="2">รับใบสมัครไว้เขียนส่งทีหลัง</th>
+                                <th rowspan="2">รับใบสมัครไว้<br>(จะส่งต่อ)</th>
                             </tr>
                             <tr>
                                 <th>ชาย</th>
