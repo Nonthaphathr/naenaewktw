@@ -192,10 +192,30 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .student-item .student-name-row {
             display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 15px;
+            grid-template-columns: auto 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .student-item .student-name-row select,
+        .student-item .student-name-row input {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .student-item .student-bottom-row {
+            display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .student-item input,
@@ -537,6 +557,113 @@
             font-style: italic;
         }
 
+        /* Detail Cards (mobile view) */
+        .detail-table-wrapper {
+            /* desktop: แสดง table ปกติ */
+        }
+
+        .detail-cards {
+            display: none; /*숨ก็จาก desktop */
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #ff6b35;
+        }
+
+        .detail-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .detail-card .card-school-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .detail-card .card-date {
+            font-size: 12px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .detail-card .card-teacher {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .detail-card .card-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .detail-card .card-stat-item {
+            background: #fff5eb;
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        .detail-card .card-stat-item .stat-label {
+            font-size: 11px;
+            color: #888;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .detail-card .card-stat-item .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .detail-card .card-stat-item.highlight .stat-value {
+            color: #ff6b35;
+        }
+
+        .detail-card .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .detail-card .card-actions button {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .detail-card .btn-card-copy {
+            background: #28a745;
+            color: white;
+        }
+
+        .detail-card .btn-card-edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .detail-card .btn-card-delete {
+            background: #dc3545;
+            color: white;
+        }
+
         @media print {
             @page {
                 size: A4;
@@ -742,14 +869,13 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            table {
-                min-width: 800px;
-                font-size: 12px;
+            /* Student item: select full width, name row 2 cols */
+            .student-item .student-name-row {
+                grid-template-columns: 1fr 1fr;
             }
 
-            th, td {
-                padding: 6px 4px;
-                white-space: nowrap;
+            .student-item .student-name-row select {
+                grid-column: 1 / -1;
             }
 
             .form-group label {
@@ -759,26 +885,22 @@
             .form-group select,
             .form-group input,
             .form-group textarea {
-                font-size: 14px;
+                font-size: 16px; /* iOS 16px min to avoid zoom */
                 padding: 10px;
             }
 
-            .student-item {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .student-item > div:first-child {
-                grid-template-columns: 1fr 2fr !important;
+            .student-item input,
+            .student-item select {
+                font-size: 16px;
             }
 
             .checkbox-group {
-                flex-direction: column;
-                gap: 10px;
+                gap: 15px;
             }
 
             .modal-content {
                 padding: 15px;
+                margin: 5% auto;
             }
 
             #modalReportText,
@@ -799,6 +921,31 @@
                 position: static !important;
                 margin-top: 10px;
                 display: inline-block;
+            }
+
+            /* Detail:숨 table, แสดง cards */
+            .detail-table-wrapper {
+                display: none;
+            }
+
+            .detail-cards {
+                display: block;
+            }
+
+            /* A4 Paper: scale to fit mobile viewport */
+            #memoContainer {
+                width: 100%;
+                overflow: hidden;
+                border-radius: 12px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            }
+
+            .a4-paper {
+                width: 210mm;
+                min-height: auto;
+                margin: 0;
+                transform-origin: top left;
+                /* scale จะถูกคำนวณ dynamically โดย JS */
             }
         }
 
@@ -1071,7 +1218,8 @@
             </div>
 
             <h3 style="color: #ff6b35; margin-bottom: 15px;">รายละเอียดข้อมูล</h3>
-            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <!-- Table view สำหรับ desktop -->
+            <div class="detail-table-wrapper">
                 <table id="detailTable">
                     <thead>
                         <tr>
@@ -1082,7 +1230,7 @@
                             <th>หญิง</th>
                             <th>รวม</th>
                             <th>เขียนใบสมัคร</th>
-                            <th>รับใบสมัครไว้และส่งทีหลัง</th>
+                            <th>รับใบสมัครไว้</th>
                             <th>วันที่บันทึก</th>
                             <th>คัดลอก</th>
                             <th>จัดการ</th>
@@ -1092,6 +1240,8 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Card view สำหรับ mobile -->
+            <div id="detailCards" class="detail-cards"></div>
 
             <div class="text-center mt-20">
                 <button class="btn btn-success" onclick="copyReportText()">📋 คัดลอกข้อความส่งไลน์</button>
@@ -1279,8 +1429,8 @@
             div.className = 'student-item';
             div.id = `student-${studentCounter}`;
             div.innerHTML = `
-                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 10px; flex: 1;">
-                    <select style="width: 100px;">
+                <div class="student-name-row">
+                    <select>
                         <option value="เด็กชาย">เด็กชาย</option>
                         <option value="เด็กหญิง">เด็กหญิง</option>
                         <option value="นาย">นาย</option>
@@ -1289,17 +1439,19 @@
                     <input type="text" placeholder="ชื่อ" required>
                     <input type="text" placeholder="นามสกุล" required>
                 </div>
-                <div class="checkbox-group">
-                    <label>
-                        <input type="checkbox" class="checkbox-written">
-                        เขียนใบสมัครแล้ว
-                    </label>
-                    <label>
-                        <input type="checkbox" class="checkbox-received">
-                        รับใบสมัครไว้และส่งทีหลัง
-                    </label>
+                <div class="student-bottom-row">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" class="checkbox-written">
+                            เขียนใบสมัครแล้ว
+                        </label>
+                        <label>
+                            <input type="checkbox" class="checkbox-received">
+                            รับใบสมัครไว้
+                        </label>
+                    </div>
+                    <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
                 </div>
-                <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
             `;
             studentList.appendChild(div);
         }
@@ -1353,8 +1505,8 @@
                         div.className = 'student-item';
                         div.id = `student-${studentCounter}`;
                         div.innerHTML = `
-                            <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 10px; flex: 1;">
-                                <select style="width: 100px;">
+                            <div class="student-name-row">
+                                <select>
                                     <option value="เด็กชาย" ${student.prefix === 'เด็กชาย' ? 'selected' : ''}>เด็กชาย</option>
                                     <option value="เด็กหญิง" ${student.prefix === 'เด็กหญิง' ? 'selected' : ''}>เด็กหญิง</option>
                                     <option value="นาย" ${student.prefix === 'นาย' ? 'selected' : ''}>นาย</option>
@@ -1363,17 +1515,19 @@
                                 <input type="text" placeholder="ชื่อ" value="${student.firstName}" required>
                                 <input type="text" placeholder="นามสกุล" value="${student.lastName}" required>
                             </div>
-                            <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" class="checkbox-written" ${student.hasWritten ? 'checked' : ''}>
-                                    เขียนใบสมัครแล้ว
-                                </label>
-                                <label>
-                                    <input type="checkbox" class="checkbox-received" ${student.hasReceived ? 'checked' : ''}>
-                                    รับใบสมัครไว้และส่งทีหลัง
-                                </label>
+                            <div class="student-bottom-row">
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" class="checkbox-written" ${student.hasWritten ? 'checked' : ''}>
+                                        เขียนใบสมัครแล้ว
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" class="checkbox-received" ${student.hasReceived ? 'checked' : ''}>
+                                        รับใบสมัครไว้
+                                    </label>
+                                </div>
+                                <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
                             </div>
-                            <button class="btn btn-danger btn-small" onclick="removeStudent(${studentCounter})">ลบ</button>
                         `;
                         studentList.appendChild(div);
                     });
@@ -1565,7 +1719,7 @@
                     <div class="label">คน</div>
                 </div>
                 <div class="stat-card">
-                    <h3>รับใบสมัครไว้และส่งทีหลัง</h3>
+                    <h3>รับใบสมัครไว้</h3>
                     <div class="value">${totalReceived}</div>
                     <div class="label">คน</div>
                 </div>
@@ -1733,10 +1887,14 @@
             const tbody = document.getElementById('detailTableBody');
             tbody.innerHTML = '';
 
+            const cardsContainer = document.getElementById('detailCards');
+            cardsContainer.innerHTML = '';
+
             data.forEach(item => {
                 const written = item.students ? item.students.filter(s => s.hasWritten).length : 0;
                 const received = item.students ? item.students.filter(s => s.hasReceived).length : 0;
 
+                // --- Table Row (desktop) ---
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${item.school}</td>
@@ -1759,6 +1917,49 @@
                     </td>
                 `;
                 tbody.appendChild(tr);
+
+                // --- Card (mobile) ---
+                const card = document.createElement('div');
+                card.className = 'detail-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-school-name">🏫 ${item.school}</div>
+                        <div class="card-date">${item.date}</div>
+                    </div>
+                    <div class="card-teacher">👨‍🏫 ครูผู้ส่งข้อมูล: ${item.teacher}</div>
+                    <div class="card-stats">
+                        <div class="card-stat-item">
+                            <span class="stat-label">นร.ทั้งหมด</span>
+                            <span class="stat-value">${item.totalStudentsInSchool || 0}</span>
+                        </div>
+                        <div class="card-stat-item">
+                            <span class="stat-label">ชาย</span>
+                            <span class="stat-value">${item.male || 0}</span>
+                        </div>
+                        <div class="card-stat-item">
+                            <span class="stat-label">หญิง</span>
+                            <span class="stat-value">${item.female || 0}</span>
+                        </div>
+                        <div class="card-stat-item highlight">
+                            <span class="stat-label">รวม</span>
+                            <span class="stat-value">${item.total || 0}</span>
+                        </div>
+                        <div class="card-stat-item">
+                            <span class="stat-label">เขียนใบสมัคร</span>
+                            <span class="stat-value">${written}</span>
+                        </div>
+                        <div class="card-stat-item">
+                            <span class="stat-label">รับใบสมัครไว้</span>
+                            <span class="stat-value">${received}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-card-copy" onclick="copySchoolReport('${item.id}')">📋 คัดลอก</button>
+                        <button class="btn-card-edit" onclick="editRecord('${item.id}')">✏️ แก้ไข</button>
+                        <button class="btn-card-delete" onclick="deleteRecord('${item.id}')">🗑️ ลบ</button>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
             });
         }
 
@@ -1787,7 +1988,7 @@
   - ชาย: ${record.male || 0} คน
   - หญิง: ${record.female || 0} คน
 • เขียนใบสมัครแล้ว: ${written} คน
-• รับใบสมัครไว้และส่งทีหลัง: ${received} คน`;
+• รับใบสมัครไว้: ${received} คน`;
 
                 if (record.students && record.students.length > 0) {
                     reportText += `
@@ -1796,7 +1997,7 @@
                     record.students.forEach((student, index) => {
                         const status = [];
                         if (student.hasWritten) status.push('เขียนใบสมัครแล้ว');
-                        if (student.hasReceived) status.push('รับใบสมัครไว้และส่งทีหลัง');
+                        if (student.hasReceived) status.push('รับใบสมัครไว้');
                         const statusText = status.length > 0 ? ` (${status.join(', ')})` : '';
                         reportText += `
 ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusText}`;
@@ -1889,7 +2090,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
                     <div class="label">คน</div>
                 </div>
                 <div class="stat-card">
-                    <h3>รับใบสมัครไว้และส่งทีหลัง</h3>
+                    <h3>รับใบสมัครไว้</h3>
                     <div class="value">${totalReceived}</div>
                     <div class="label">คน</div>
                 </div>
@@ -1979,7 +2180,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
 • ชาย: ${totalMale} คน
 • หญิง: ${totalFemale} คน
 • เขียนใบสมัครแล้ว: ${totalWritten} คน
-• รับใบสมัครไว้และส่งทีหลัง: ${totalReceived} คน
+• รับใบสมัครไว้: ${totalReceived} คน
 
 📍 รายละเอียดแยกตามโรงเรียน
 `;
@@ -1989,7 +2190,7 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
                 reportText += `
 ${school}
 • รวม ${sd.total} คน (ชาย ${sd.male} หญิง ${sd.female})
-• เขียนใบสมัคร ${sd.written} คน, รับใบสมัครไว้และส่งทีหลัง ${sd.received} คน
+• เขียนใบสมัคร ${sd.written} คน, รับใบสมัครไว้ ${sd.received} คน
 `;
             });
 
@@ -2384,7 +2585,7 @@ ${school}
                                 <th rowspan="2">ครูผู้ส่งข้อมูล</th>
                                 <th colspan="3">จำนวนนักเรียน</th>
                                 <th rowspan="2">เขียนใบสมัคร</th>
-                                <th rowspan="2">รับใบสมัครไว้และส่งทีหลัง</th>
+                                <th rowspan="2">รับใบสมัครไว้</th>
                             </tr>
                             <tr>
                                 <th>ชาย</th>
@@ -2439,8 +2640,47 @@ ${school}
             `;
 
             document.getElementById('memoContainer').innerHTML = memoHTML;
-            showToast('สร้างเอกสารเรียบร้อยแล้ว');
+            scaleMemoForMobile();
+            showToast('สร้องเอกสารเรียบร้อยแล้ว');
         }
+
+        function scaleMemoForMobile() {
+            const paper = document.querySelector('.a4-paper.memo-layout');
+            if (!paper) return;
+
+            const container = document.getElementById('memoContainer');
+            if (!container) return;
+
+            const viewportWidth = window.innerWidth;
+
+            if (viewportWidth <= 768) {
+                const paperWidth = 793.7; // 210mm in px
+                const containerWidth = container.clientWidth;
+                const scale = containerWidth / paperWidth;
+
+                paper.style.transform = 'scale(' + scale + ')';
+                paper.style.transformOrigin = 'top left';
+                paper.style.width = paperWidth + 'px';
+                paper.style.minHeight = 'auto';
+                paper.style.margin = '0';
+                paper.style.boxShadow = 'none';
+
+                // ปรับ container height ให้ match scaled content
+                const paperHeight = paper.getBoundingClientRect().height;
+                container.style.height = (paperHeight * scale) + 'px';
+            } else {
+                // desktop: reset
+                paper.style.transform = '';
+                paper.style.transformOrigin = '';
+                paper.style.width = '';
+                paper.style.minHeight = '';
+                paper.style.margin = '';
+                paper.style.boxShadow = '';
+                container.style.height = '';
+            }
+        }
+
+        window.addEventListener('resize', scaleMemoForMobile);
 
         function printMemo() {
             window.print();
