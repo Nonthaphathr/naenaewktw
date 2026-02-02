@@ -112,6 +112,15 @@
 
         #memoContainer {
             background: transparent;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        #memoContainer *,
+        #memoContainer *::before,
+        #memoContainer *::after {
+            border-radius: 0 !important;
+            box-shadow: none !important;
         }
 
         @keyframes fadeIn {
@@ -462,7 +471,9 @@
             background: white;
             padding: 10mm 15mm 10mm 20mm;
             font-family: 'Sarabun', sans-serif;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            outline: none !important;
             color: black;
             margin: 20px auto;
         }
@@ -472,6 +483,16 @@
             position: relative;
             min-height: 297mm;
             padding: 10mm 15mm 25mm 20mm;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        /* Force remove all rounded corners and shadows in memo */
+        .memo-layout *,
+        .memo-layout *::before,
+        .memo-layout *::after {
+            border-radius: 0 !important;
+            box-shadow: none !important;
         }
 
         .memo-layout .garuda {
@@ -548,6 +569,9 @@
             border-collapse: collapse;
             margin: 4px 0;
             font-size: 10pt;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            outline: none !important;
         }
 
         .memo-layout .doc-table th,
@@ -558,6 +582,8 @@
             vertical-align: middle;
             line-height: 1.2;
             font-size: 10pt;
+            border-radius: 0 !important;
+            box-shadow: none !important;
         }
 
         .memo-layout .doc-table th {
@@ -577,12 +603,15 @@
         .memo-layout .sign-table {
             width: 100%;
             border-collapse: collapse;
-            border: none;
+            border: none !important;
             margin-top: 12px;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            outline: none !important;
         }
 
         .memo-layout .sign-table td {
-            border: none;
+            border: none !important;
             vertical-align: top;
             text-align: center;
             padding: 2px 5px;
@@ -590,6 +619,8 @@
             font-size: 11pt;
             line-height: 1.3;
             white-space: nowrap;
+            border-radius: 0 !important;
+            box-shadow: none !important;
         }
         
         .memo-layout .name-shift-left {
@@ -2798,7 +2829,7 @@ ${school}
                                 <th rowspan="2">ที่</th>
                                 <th rowspan="2">โรงเรียน</th>
                                 <th rowspan="2">ครูผู้ส่งข้อมูล</th>
-                                <th colspan="3">จำนวนนักเรียน</th>
+                                <th colspan="3">นักเรียนที่สนใจ</th>
                                 <th rowspan="2">เขียนใบสมัคร</th>
                                 <th rowspan="2">รับใบสมัครไว้<br>(จะส่งต่อ)</th>
                             </tr>
