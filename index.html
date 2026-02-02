@@ -102,6 +102,18 @@
             animation: fadeIn 0.3s;
         }
 
+        /* Report tab - no rounded corners for memo preview */
+        #report.content-box {
+            border-radius: 0;
+            box-shadow: none;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        #memoContainer {
+            background: transparent;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -450,7 +462,7 @@
             background: white;
             padding: 10mm 15mm 10mm 20mm;
             font-family: 'Sarabun', sans-serif;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             color: black;
             margin: 20px auto;
         }
@@ -905,6 +917,13 @@
         }
 
         @media screen and (max-width: 768px) {
+            #report.content-box {
+                border-radius: 0;
+                box-shadow: none;
+                background: #f5f5f5;
+                padding: 10px;
+            }
+
             .header h1 {
                 font-size: 20px;
             }
@@ -993,8 +1012,7 @@
             #memoContainer {
                 width: 100%;
                 overflow: hidden;
-                border-radius: 12px;
-                box-shadow: 0 0 10px rgba(0,0,0,0.15);
+                background: transparent;
             }
 
             .a4-paper {
@@ -1007,6 +1025,12 @@
         }
 
         @media screen and (max-width: 480px) {
+            #report.content-box {
+                border-radius: 0;
+                box-shadow: none;
+                padding: 10px 5px;
+            }
+
             .header {
                 padding: 15px 10px;
             }
