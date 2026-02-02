@@ -343,20 +343,65 @@
         /* Table */
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.15);
         }
 
         th, td {
-            padding: 12px;
+            padding: 13px 14px;
             text-align: left;
             border-bottom: 1px solid #ffe0cc;
         }
 
         th {
-            background: #ff6b35;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
             color: white;
             font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        thead tr th:first-child {
+            border-radius: 14px 0 0 0;
+        }
+
+        thead tr th:last-child {
+            border-radius: 0 14px 0 0;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr td:nth-child(n+3):nth-child(-n+8) {
+            text-align: center;
+            font-weight: 600;
+            color: #444;
+        }
+
+        tbody tr td:nth-child(6) {
+            color: #ff6b35;
+            font-size: 16px;
+        }
+
+        tbody tr td:nth-child(9) {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        tbody tr td:nth-child(10),
+        tbody tr td:nth-child(11) {
+            text-align: center;
         }
 
         tr:hover {
@@ -561,7 +606,17 @@
 
         /* Detail Cards (mobile view) */
         .detail-table-wrapper {
-            /* desktop: แสดง table ปกติ */
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.12);
+            margin-top: 20px;
+        }
+
+        .detail-table-wrapper table {
+            min-width: 900px;
+            box-shadow: none;
+            margin-top: 0;
         }
 
         .detail-cards {
@@ -1236,6 +1291,7 @@
                             <th>รวม</th>
                             <th>เขียนใบสมัคร</th>
                             <th>รับใบสมัครไว้<br>(จะส่งภายหลัง)</th>
+                            <th>วันที่บันทึก</th>
                             <th>คัดลอก</th>
                             <th>จัดการ</th>
                         </tr>
