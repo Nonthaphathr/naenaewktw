@@ -2700,7 +2700,19 @@
                 filterSchool.value = currentValue;
 
                 updateSchoolList(schools);
-                updateSchoolGrid(schools);
+                
+                // Calculate school counts from current registration data
+                const schoolCounts = {};
+                if (allRegistrationData && allRegistrationData.length > 0) {
+                    allRegistrationData.forEach(item => {
+                        if (!schoolCounts[item.school]) {
+                            schoolCounts[item.school] = 0;
+                        }
+                        schoolCounts[item.school] += item.total || 0;
+                    });
+                }
+                
+                updateSchoolGrid(schools, schoolCounts);
                 
             } catch (error) {
                 console.error('Load schools error:', error);
@@ -2903,19 +2915,21 @@
             });
         }
 
-        function updateSchoolGrid(schools) {
+        function updateSchoolGrid(schools, schoolCounts = null) {
             const schoolGrid = document.getElementById('schoolGrid');
             if (!schoolGrid) return;
             
-            // Calculate counts from registration data
-            const schoolCounts = {};
-            if (allRegistrationData) {
+            // คำนวณ counts จาก registration data ถ้าไม่มีส่งมา
+            if (!schoolCounts && allRegistrationData) {
+                schoolCounts = {};
                 allRegistrationData.forEach(item => {
                     if (!schoolCounts[item.school]) {
                         schoolCounts[item.school] = 0;
                     }
                     schoolCounts[item.school] += item.total || 0;
                 });
+            } else if (!schoolCounts) {
+                schoolCounts = {};
             }
             
             schoolGrid.innerHTML = '';
@@ -3033,6 +3047,19 @@
 
             // Update chart
             updateChart(schoolCounts);
+            
+            // Update school grid in landing page with current counts
+            updateLandingPageSchoolGrid(schoolCounts);
+        }
+
+        // Function to update school grid in landing page
+        async function updateLandingPageSchoolGrid(schoolCounts) {
+            try {
+                const schools = await window.secureFirebaseAPI.getSchools();
+                updateSchoolGrid(schools, schoolCounts);
+            } catch (error) {
+                console.error('Error updating landing page school grid:', error);
+            }
         }
 
         function updateChart(schoolCounts) {
@@ -3698,7 +3725,13 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
         }
 
         function loadLandingPage() {
-            loadSchools();
+            // โหลดข้อมูลใหม่และอัพเดท school grid
+            loadData().then(() => {
+                loadSchools();
+            }).catch(error => {
+                console.error('Load landing page error:', error);
+                loadSchools(); // โหลด schools อย่างน้อย
+            });
         }
 
         // Initialize app
@@ -3706,13 +3739,18 @@ ${index + 1}. ${student.prefix}${student.firstName} ${student.lastName}${statusT
             try {
                 showLoadingOverlay();
                 
+                // โหลดข้อมูลพื้นฐานก่อน
                 await Promise.all([
-                    loadSchools(),
                     loadTeachers(),
                     loadSettings()
                 ]);
                 
+                // โหลดข้อมูล registration ก่อน
                 await loadData();
+                
+                // แล้วค่อยโหลด schools (จะใช้ข้อมูล registration ที่โหลดแล้ว)
+                await loadSchools();
+                
                 addStudent(); // Add initial student
                 
                 hideLoadingOverlay();
