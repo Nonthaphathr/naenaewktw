@@ -527,72 +527,141 @@
         /* Responsive สำหรับ Student Section */
         @media screen and (max-width: 768px) {
             .student-section {
-                padding: 20px;
-                margin: 20px 0;
+                padding: 15px;
+                margin: 20px -10px; /* ขยายเต็มความกว้างเกือบเต็มหน้าจอ */
+                border-radius: 15px;
             }
 
             .student-section-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
+                padding-bottom: 10px;
             }
 
             .student-section-header h3 {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .student-item {
-                padding: 20px;
+                padding: 15px;
+                margin: 0 -5px; /* ขยายความกว้าง */
+                border-radius: 12px;
+            }
+
+            .student-item::before {
+                left: 15px;
+                top: -10px;
+                padding: 4px 12px;
+                font-size: 12px;
             }
 
             .student-name-row {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 12px;
+            }
+
+            .student-name-row select,
+            .student-name-row input {
+                padding: 12px 15px;
+                font-size: 16px;
+                border-radius: 10px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .student-name-row select {
                 order: -1; /* ให้ dropdown อยู่บนสุด */
+                background: linear-gradient(135deg, #fff 0%, var(--bg-light) 100%);
+                border: 2px solid var(--primary-color);
+                font-weight: 600;
+                color: var(--primary-color);
             }
 
             .checkbox-group {
-                gap: 15px;
+                gap: 12px;
                 flex-direction: column;
                 align-items: stretch;
             }
 
             .checkbox-group label {
                 justify-content: flex-start;
-                padding: 12px;
+                padding: 12px 15px;
+                margin: 0;
+                background: var(--bg-light);
+                border: 2px solid var(--bg-lighter);
+                border-radius: 10px;
+                font-size: 15px;
+                transition: all 0.3s ease;
+            }
+
+            .checkbox-group label:hover,
+            .checkbox-group label:active {
+                background: white;
+                border-color: var(--primary-color);
+                transform: none; /* ไม่ขยับใน mobile */
+                box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+            }
+
+            .checkbox-group input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+                margin-right: 5px;
             }
 
             .student-bottom-row {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 15px;
+                padding-top: 15px;
             }
 
             .student-item .btn-danger {
                 width: 100%;
                 padding: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                border-radius: 10px;
+            }
+
+            /* Empty State ใน Mobile */
+            .student-list:empty::after {
+                font-size: 14px;
+                padding: 30px 15px;
+                margin: 0 -5px;
             }
         }
 
         @media screen and (max-width: 480px) {
             .student-section {
-                padding: 15px;
+                padding: 12px;
+                margin: 15px -15px; /* เต็มความกว้างแทบทั้งหมด */
+                border-radius: 12px;
             }
 
             .student-item {
-                padding: 15px;
+                padding: 12px;
+                margin: 0 -8px;
             }
 
             .student-name-row select,
             .student-name-row input {
                 padding: 10px 12px;
-                font-size: 14px;
+                font-size: 15px;
             }
 
             .checkbox-group label {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .checkbox-group input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+            }
+
+            .student-item .btn-danger {
+                padding: 10px;
                 font-size: 14px;
             }
         }
@@ -1603,7 +1672,227 @@
             }
         }
 
-        /* Mobile Adjustments for Report */
+        /* Mobile-specific Statistics Layout */
+        @media screen and (max-width: 768px) {
+            /* Stats Grid เป็น 2 คอลัมน์ใน mobile */
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-bottom: 25px;
+            }
+
+            .stat-card {
+                padding: 20px 15px;
+                border-radius: 12px;
+            }
+
+            .stat-card h3 {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .stat-card .value {
+                font-size: 32px;
+                margin-bottom: 6px;
+            }
+
+            .stat-card .label {
+                font-size: 12px;
+            }
+
+            /* Percentage Display แนวตั้งใน mobile */
+            .percentage-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .percentage-badge {
+                position: static;
+                margin-top: 15px;
+                display: inline-block;
+                font-size: 24px;
+                padding: 8px 20px;
+            }
+
+            /* Table Wrapper - เปลี่ยนเป็น Card Layout ใน mobile */
+            .detail-table-wrapper {
+                display: none; /* ซ่อนตารางใน mobile */
+            }
+
+            /* Mobile Cards แทนตาราง */
+            .mobile-cards {
+                display: block;
+            }
+
+            .mobile-card {
+                background: white;
+                margin-bottom: 15px;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                border-left: 4px solid var(--primary-color);
+                position: relative;
+            }
+
+            .mobile-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid var(--bg-lighter);
+            }
+
+            .mobile-card-header h4 {
+                color: var(--primary-color);
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0;
+                flex: 1;
+                line-height: 1.3;
+            }
+
+            .mobile-card-actions {
+                display: flex;
+                gap: 8px;
+                flex-shrink: 0;
+                margin-left: 10px;
+            }
+
+            .mobile-card-actions .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                border-radius: 6px;
+                min-width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .mobile-card-body {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+
+            .mobile-card-item {
+                text-align: center;
+            }
+
+            .mobile-card-item .label {
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 5px;
+                display: block;
+            }
+
+            .mobile-card-item .value {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-dark);
+                display: block;
+            }
+
+            .mobile-card-item .value.total {
+                color: var(--primary-color);
+                font-size: 20px;
+            }
+
+            .mobile-card-meta {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 13px;
+                color: var(--text-muted);
+                padding-top: 10px;
+                border-top: 1px solid var(--bg-lighter);
+            }
+
+            .mobile-card-teacher {
+                font-style: italic;
+            }
+
+            .mobile-card-date {
+                font-weight: 500;
+            }
+
+            /* Action Buttons ใน Mobile */
+            .mobile-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            .mobile-actions .btn {
+                flex: 1;
+                padding: 15px;
+                font-size: 15px;
+                border-radius: 12px;
+                text-align: center;
+                font-weight: 600;
+            }
+
+            /* Chart Container ใน Mobile */
+            .chart-container {
+                padding: 20px 15px;
+                margin: 15px -10px;
+                border-radius: 15px;
+            }
+
+            .chart-container h3 {
+                font-size: 18px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+        }
+
+        /* Desktop - ซ่อน mobile cards */
+        @media screen and (min-width: 769px) {
+            .mobile-cards {
+                display: none;
+            }
+
+            .mobile-actions {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px 12px;
+            }
+
+            .stat-card .value {
+                font-size: 28px;
+            }
+
+            .mobile-card {
+                padding: 15px;
+                margin-bottom: 12px;
+            }
+
+            .mobile-card-body {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .mobile-card-header h4 {
+                font-size: 15px;
+            }
+
+            .mobile-actions .btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
         @media screen and (max-width: 768px) {
             #report.content-box {
                 border-radius: 0;
@@ -3161,35 +3450,115 @@
 
         function updateDetailTable(data) {
             const tbody = document.getElementById('detailTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
+            if (tbody) {
+                tbody.innerHTML = '';
+                
+                data.forEach(item => {
+                    const written = item.students ? item.students.filter(s => s.hasWritten).length : 0;
+                    const received = item.students ? item.students.filter(s => s.hasReceived).length : 0;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.school}</td>
+                        <td>${item.teacher}</td>
+                        <td>${item.totalStudentsInSchool || 0}</td>
+                        <td>${item.male || 0}</td>
+                        <td>${item.female || 0}</td>
+                        <td><strong>${item.total || 0}</strong></td>
+                        <td>${written}</td>
+                        <td>${received}</td>
+                        <td>${item.date}</td>
+                        <td>
+                            <button class="btn btn-success btn-small" onclick="copySchoolReport('${item.id}')">📋</button>
+                        </td>
+                        <td>
+                            <button onclick="editRecord('${item.id}')" class="btn btn-secondary btn-small" style="margin-right: 5px;">✏️</button>
+                            <button onclick="deleteRecord('${item.id}')" class="btn btn-danger btn-small">🗑️</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // สร้าง Mobile Cards
+            updateMobileCards(data);
+        }
+
+        function updateMobileCards(data) {
+            // ลบ mobile cards เดิมถ้ามี
+            const existingCards = document.querySelector('.mobile-cards');
+            if (existingCards) {
+                existingCards.remove();
+            }
+
+            // สร้าง container สำหรับ mobile cards
+            const mobileContainer = document.createElement('div');
+            mobileContainer.className = 'mobile-cards';
+
             data.forEach(item => {
                 const written = item.students ? item.students.filter(s => s.hasWritten).length : 0;
                 const received = item.students ? item.students.filter(s => s.hasReceived).length : 0;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.school}</td>
-                    <td>${item.teacher}</td>
-                    <td>${item.totalStudentsInSchool || 0}</td>
-                    <td>${item.male || 0}</td>
-                    <td>${item.female || 0}</td>
-                    <td><strong>${item.total || 0}</strong></td>
-                    <td>${written}</td>
-                    <td>${received}</td>
-                    <td>${item.date}</td>
-                    <td>
-                        <button class="btn btn-success btn-small" onclick="copySchoolReport('${item.id}')">📋</button>
-                    </td>
-                    <td>
-                        <button onclick="editRecord('${item.id}')" class="btn btn-secondary btn-small" style="margin-right: 5px;">✏️</button>
-                        <button onclick="deleteRecord('${item.id}')" class="btn btn-danger btn-small">🗑️</button>
-                    </td>
+                const card = document.createElement('div');
+                card.className = 'mobile-card';
+                card.innerHTML = `
+                    <div class="mobile-card-header">
+                        <h4>${item.school}</h4>
+                        <div class="mobile-card-actions">
+                            <button class="btn btn-success btn-small" onclick="copySchoolReport('${item.id}')" title="คัดลอก">📋</button>
+                            <button class="btn btn-secondary btn-small" onclick="editRecord('${item.id}')" title="แก้ไข">✏️</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteRecord('${item.id}')" title="ลบ">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="mobile-card-body">
+                        <div class="mobile-card-item">
+                            <span class="label">นร.ทั้งหมด</span>
+                            <span class="value">${item.totalStudentsInSchool || 0}</span>
+                        </div>
+                        <div class="mobile-card-item">
+                            <span class="label">สนใจสมัคร</span>
+                            <span class="value total">${item.total || 0}</span>
+                        </div>
+                        <div class="mobile-card-item">
+                            <span class="label">ชาย</span>
+                            <span class="value">${item.male || 0}</span>
+                        </div>
+                        <div class="mobile-card-item">
+                            <span class="label">หญิง</span>
+                            <span class="value">${item.female || 0}</span>
+                        </div>
+                        <div class="mobile-card-item">
+                            <span class="label">เขียนใบสมัคร</span>
+                            <span class="value">${written}</span>
+                        </div>
+                        <div class="mobile-card-item">
+                            <span class="label">รับใบสมัครไว้</span>
+                            <span class="value">${received}</span>
+                        </div>
+                    </div>
+                    <div class="mobile-card-meta">
+                        <span class="mobile-card-teacher">ครู: ${item.teacher}</span>
+                        <span class="mobile-card-date">${item.date}</span>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                mobileContainer.appendChild(card);
             });
+
+            // เพิ่ม mobile actions
+            const mobileActions = document.createElement('div');
+            mobileActions.className = 'mobile-actions';
+            mobileActions.innerHTML = `
+                <button class="btn btn-success" onclick="copyReportText()">
+                    📋 คัดลอกข้อความส่งไลน์
+                </button>
+            `;
+            mobileContainer.appendChild(mobileActions);
+
+            // แทรกหลังจาก chart container
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer) {
+                chartContainer.parentNode.insertBefore(mobileContainer, chartContainer.nextSibling);
+            }
         }
 
         function filterStatistics() {
